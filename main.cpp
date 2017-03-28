@@ -1,11 +1,7 @@
-
 #include <ncurses.h>
 #include <boost/program_options.hpp>
 #include <iostream>
-
-//#include <iostream>
-//#include <pthread.h>
-
+#include <thread>
 
 
 int fun_with_ncurses() {
@@ -38,14 +34,15 @@ struct {
 } arg;
 
 
+namespace po = boost::program_options;
+
 void parse_args(int argc, const char *const *argv) {
-    namespace po = boost::program_options;
     po::options_description desc("Allowed options");
     desc.add_options()
             ("help,h", "show this message and exit")
             ("input_file,i", po::value<std::string>(&arg.input_file), "(REQUIRED) file with urls")
             ("thread_num,n", po::value<int>(&arg.thread_number), "(REQUIRED) number of threads")
-            ("output_dir,o", po::value<std::string>(&arg.output_dir), "destination directory");
+            ("output_dir,o", po::value<std::string>(&arg.output_dir)->default_value("output"), "destination directory");
 
     po::variables_map vm;
     po::store(po::parse_command_line(argc, argv, desc), vm);
@@ -57,10 +54,27 @@ void parse_args(int argc, const char *const *argv) {
     }
 }
 
+class MyThread {
+    int _x;
+public:
+    MyThread() : _x(-1) {}
+
+    MyThread(int x) : _x(x) {}
+
+    void operator()() const { std::cout << _x; }
+
+    void operator()(int n) { std::cout << n + _x; }
+};
+
 int main(int argc, const char *const *argv) {
     parse_args(argc, argv);
 
     printf("args: -i |%s| -n |%d| -o |%s|\n", arg.input_file.c_str(), arg.thread_number, arg.output_dir.c_str());
     std::cout << "|" << arg.input_file << "|" << arg.thread_number << "|" << arg.output_dir << "|\n";
+
+    int x = 2, n = 4;
+    std::thread t(MyThread(5), n);
+    t.join();
+
     return 0;
 }
