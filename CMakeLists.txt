@@ -13,6 +13,10 @@ target_link_libraries(so_pro ncurses)
 target_link_libraries(so_pro pthread)
 
 # boost
-find_package(Boost COMPONENTS program_options REQUIRED)
+#find_package(Boost COMPONENTS program_options REQUIRED)
+#find_package(Boost COMPONENTS filesystem REQUIRED)
 #INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIRS})
-target_link_libraries(so_pro ${Boost_LIBRARIES})
+#target_link_libraries(so_pro ${Boost_LIBRARIES})
+target_link_libraries(so_pro boost_program_options)
+target_link_libraries(so_pro boost_filesystem)
+target_link_libraries(so_pro boost_system)
