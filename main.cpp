@@ -8,8 +8,22 @@
 namespace po = boost::program_options;
 namespace fs = boost::filesystem;
 
-std::vector<std::string> urls;
+
+struct URL {
+    int id;
+    std::string url;
+    float size;
+    float downloaded;
+    bool is_done;
+    int thread_id;
+    std::string path;
+    std::string error;
+};
+
+std::vector<URL> urls;
 std::mutex urls_mutex;
+
+std::mutex gui_mutex;
 
 int fun_with_ncurses() {
 
@@ -83,8 +97,9 @@ int read_urls() {
     std::string url;
 
     urls_mutex.lock();
+    auto url_id = 0;
     while (file >> url) {
-        urls.push_back(url);
+        urls.push_back(URL{url_id++, url});
     }
     urls_mutex.unlock();
 
@@ -103,20 +118,56 @@ public:
     void operator()(int n) { std::cout << n + _x; }
 };
 
+void open_gui() {
+    initscr();
+    raw();
+}
 
-int main(int argc, const char *const *argv) {
-    if (parse_args(argc, argv)) {
-        return 1;
+void print_urls() {
+    urls_mutex.lock();
+    auto n = urls.size();
+    urls_mutex.unlock();
+
+    auto plural_f = n == 1 ? "" : "s";
+    auto plural_t = arg.thread_number == 1 ? "" : "s";
+    printw("Downloading %d file%s by %d thread%s",
+           n, plural_f, arg.thread_number, plural_t);
+
+    auto len = 0;
+    for (auto url: urls) {
+        len = std::max((int) url.url.size(), len);
     }
 
-    if (manage_files()) {
-        return 1;
+    for (auto url: urls) {
+        const auto y = url.id + 1;
+        move(y, 0);
+        printw(url.url.c_str());
+        move(y, len + 1);
+        addch('[');
+        move(y, len + 21);
+        printw("]  0.00 %%");
+    }
+}
+
+void close_gui() {
+    getch();
+    endwin();
+}
+
+
+int main(int argc, const char *const *argv) {
+    if (auto ret = parse_args(argc, argv)) {
+        return ret;
+    }
+
+    if (auto ret = manage_files()) {
+        return ret;
     }
 
     read_urls();
-    for (auto url: urls) {
-        printf("%s\n", url.c_str());
-    }
+//    for (auto url: urls) { printf("%s\n", url.c_str()); }
+    open_gui();
+    print_urls();
 
 //    printf("args: -i |%s| -n |%d| -o |%s|\n", arg.input_file.c_str(), arg.thread_number, arg.output_dir.c_str());
 //    std::cout << "|" << arg.input_file << "|" << arg.thread_number << "|" << arg.output_dir << "|\n";
@@ -124,6 +175,7 @@ int main(int argc, const char *const *argv) {
 //    int x = 2, n = 4;
 //    std::thread t(MyThread(5), n);
 //    t.join();
+    close_gui();
 
     return 0;
 }
