@@ -4,23 +4,13 @@
 #include <iostream>
 #include <thread>
 #include <mutex>
+#include "URL_Thread.h"
 
 namespace po = boost::program_options;
 namespace fs = boost::filesystem;
 
 
-struct URL {
-    int id;
-    std::string url;
-    float size;
-    float downloaded;
-    bool is_done;
-    int thread_id;
-    std::string path;
-    std::string error;
-};
-
-std::vector<URL> urls;
+std::vector<URL_Thread> urls;
 std::mutex urls_mutex;
 
 std::mutex gui_mutex;
@@ -99,7 +89,7 @@ int read_urls() {
     urls_mutex.lock();
     auto url_id = 0;
     while (file >> url) {
-        urls.push_back(URL{url_id++, url});
+        urls.push_back(URL_Thread{url_id++, url});
     }
     urls_mutex.unlock();
 
@@ -135,13 +125,13 @@ void print_urls() {
 
     auto len = 0;
     for (auto url: urls) {
-        len = std::max((int) url.url.size(), len);
+        len = std::max((int) url.get_url().size(), len);
     }
 
     for (auto url: urls) {
-        const auto y = url.id + 1;
+        const auto y = url.get_id() + 1;
         move(y, 0);
-        printw(url.url.c_str());
+        printw(url.get_url().c_str());
         move(y, len + 1);
         addch('[');
         move(y, len + 21);
@@ -165,7 +155,7 @@ int main(int argc, const char *const *argv) {
     }
 
     read_urls();
-//    for (auto url: urls) { printf("%s\n", url.c_str()); }
+//    for (auto _url: urls) { printf("%s\n", _url.c_str()); }
     open_gui();
     print_urls();
 
