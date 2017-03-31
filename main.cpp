@@ -40,7 +40,7 @@ int fun_with_ncurses() {
 
 struct {
     std::string input_file;
-    int thread_number;
+    int max_threads;
     std::string output_dir;
 } arg;
 
@@ -49,7 +49,7 @@ int parse_args(int argc, const char *const *argv) {
     desc.add_options()
             ("help,h", "show this message and exit")
             ("input_file,i", po::value<std::string>(&arg.input_file), "(REQUIRED) file with urls")
-            ("thread_num,n", po::value<int>(&arg.thread_number), "(REQUIRED) number of threads")
+            ("thread_num,n", po::value<int>(&arg.max_threads), "(REQUIRED) number of threads")
             ("output_dir,o", po::value<std::string>(&arg.output_dir)->default_value("output"), "destination directory");
 
     po::variables_map vm;
@@ -119,13 +119,13 @@ void print_urls() {
     urls_mutex.unlock();
 
     auto plural_f = n == 1 ? "" : "s";
-    auto plural_t = arg.thread_number == 1 ? "" : "s";
+    auto plural_t = arg.max_threads == 1 ? "" : "s";
     printw("Downloading %d file%s by %d thread%s",
-           n, plural_f, arg.thread_number, plural_t);
+           n, plural_f, arg.max_threads, plural_t);
 
     auto len = 0;
     for (auto url: urls) {
-        len = std::max((int) url.get_url().size(), len);
+        len = std::max(url.get_len(), len);
     }
 
     for (auto url: urls) {
@@ -154,18 +154,20 @@ int main(int argc, const char *const *argv) {
         return ret;
     }
 
-    read_urls();
-//    for (auto _url: urls) { printf("%s\n", _url.c_str()); }
-    open_gui();
-    print_urls();
+//    read_urls();
+//    open_gui();
+//    print_urls();
 
-//    printf("args: -i |%s| -n |%d| -o |%s|\n", arg.input_file.c_str(), arg.thread_number, arg.output_dir.c_str());
-//    std::cout << "|" << arg.input_file << "|" << arg.thread_number << "|" << arg.output_dir << "|\n";
+//    printf("args: -i |%s| -n |%d| -o |%s|\n", arg.input_file.c_str(), arg.max_threads, arg.output_dir.c_str());
+//    std::cout << "|" << arg.input_file << "|" << arg.max_threads << "|" << arg.output_dir << "|\n";
 
 //    int x = 2, n = 4;
 //    std::thread t(MyThread(5), n);
 //    t.join();
-    close_gui();
+//    close_gui();
+
+    URL_Thread(1, "http://cachefly.cachefly.net/10mb.test")();
+
 
     return 0;
 }
