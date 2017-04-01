@@ -67,7 +67,7 @@ int parse_args(int argc, const char *const *argv) {
 int manage_files() {
     if (!fs::is_regular_file(arg.input_file)) {
         printf("No such file: %s\n", arg.input_file.c_str());
-        return 1;
+        return 2;
     }
 
     if (!fs::is_directory(arg.output_dir)) {
@@ -109,16 +109,16 @@ void paint(size_t number, int len) {
     printw("matbur's web scraper (%d file%s, %d thread%s)", number, plural_f, arg.max_threads, plural_t);
 
     for (auto url: urls) {
-        auto y = url._id + 3;
+        auto y = url.get_id() + 3;
         move(y, 1);
-        printw("%4d) %s ", url._id, url._path.c_str());
+        printw("%4d) %s ", url.get_id(), url.get_path().c_str());
         move(y, len + 10);
         addch('[');
-        for (auto i = 0; i < url._pipes; i++) {
+        for (auto i = 0; i < url.get_pipes(); i++) {
             addch('|');
         }
         move(y, len + 21);
-        printw("] %.2f %%", url._progress);
+        printw("] %.2f %%", url.get_progress());
     }
 
     move(0, 0);
@@ -133,7 +133,7 @@ void gui_func() {
     auto number = urls.size();
     auto max_len = 0;
     for (auto url: urls) {
-        max_len = std::max(max_len, url._len);
+        max_len = std::max(max_len, url.get_len());
     }
     urls_mutex.unlock();
 
@@ -142,7 +142,7 @@ void gui_func() {
     while (!done) {
         done = true;
         for (auto url: urls) {
-            if (!url._done) {
+            if (!url.is_done()) {
                 done = false;
                 break;
             }
