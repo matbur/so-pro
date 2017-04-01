@@ -1,6 +1,12 @@
-http://icons.iconarchive.com/icons/custom-icon-design/flatastic-10/512/Sport-american-football-icon.png
-http://icons.iconarchive.com/icons/custom-icon-design/flatastic-10/512/Sport-baseball-icon.png
-http://icons.iconarchive.com/icons/custom-icon-design/flatastic-10/512/Sport-basketball-icon.png
-http://icons.iconarchive.com/icons/custom-icon-design/flatastic-10/512/Sport-football-icon.png
-http://icons.iconarchive.com/icons/custom-icon-design/flatastic-10/512/Sport-tennis-icon.png
-http://icons.iconarchive.com/icons/custom-icon-design/flatastic-10/512/Sport-volleyball-icon.png
+http://cachefly.cachefly.net/10mb.test                                                                      10mb-1
+http://icons.iconarchive.com/icons/custom-icon-design/flatastic-10/512/Sport-american-football-icon.png     Sport-american-football-icon.png
+#http://cachefly.cachefly.net/50mb.test                                                                      50mb-1
+#http://icons.iconarchive.com/icons/custom-icon-design/flatastic-10/512/Sport-baseball-icon.png              Sport-baseball-icon.png
+http://cachefly.cachefly.net/10mb.test                                                                      10mb-2
+#http://icons.iconarchive.com/icons/custom-icon-design/flatastic-10/512/Sport-basketball-icon.png            Sport-basketball-icon.png
+#http://cachefly.cachefly.net/50mb.test                                                                      50mb-2
+#http://icons.iconarchive.com/icons/custom-icon-design/flatastic-10/512/Sport-football-icon.png              Sport-football-icon.png
+http://cachefly.cachefly.net/10mb.test                                                                      10mb-3
+#http://icons.iconarchive.com/icons/custom-icon-design/flatastic-10/512/Sport-tennis-icon.png                Sport-tennis-icon.png
+#http://cachefly.cachefly.net/10mb.test                                                                      10mb-4
+#http://icons.iconarchive.com/icons/custom-icon-design/flatastic-10/512/Sport-volleyball-icon.png            Sport-volleyball-icon.png
