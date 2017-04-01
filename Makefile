@@ -1,6 +1,6 @@
 CXXFLAGS = -std=c++11 -Wall -Wextra
 LDFLAGS = -lpthread -lncurses -lboost_program_options -lboost_filesystem -lboost_system -lcurl
-OBJ = URL.o Semaphore.o
+OBJ = URL.o Semaphore.o Arguments.o GUI.o
 
 all: so_pro
 
@@ -10,8 +10,8 @@ so_pro: main.cpp $(OBJ)
 
 
 run:
-	./so_pro -n 4 -i _urls.txt
+	./so_pro -n 4 -i urls.txt
 
 
 clean:
-	rm -f so_pro
+	rm -f so_pro *.o

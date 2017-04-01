@@ -8,6 +8,30 @@ URL::URL(int id, std::string url, std::string path, std::mutex *mtx)
     _done = false;
 }
 
+int URL::get_id() const {
+    return _id;
+}
+
+int URL::get_len() const {
+    return _len;
+}
+
+const std::string &URL::get_path() const {
+    return _path;
+}
+
+double URL::get_progress() const {
+    return _progress;
+}
+
+int URL::get_pipes() const {
+    return _pipes;
+}
+
+bool URL::is_done() const {
+    return _done;
+}
+
 void URL::operator()(Semaphore *s) {
     s->wait();
 
@@ -43,7 +67,11 @@ size_t URL::_data_write(void *ptr, size_t size, size_t nmemb, void *userdata) {
 }
 
 void URL::_progress_callback(URL *clientp, double dltotal, double dlnow) {
+
     auto progress = 100 * dlnow / dltotal;
+
+    if (dltotal == 0)
+        progress = 0;
 
     std::lock_guard<std::mutex> lk(*(clientp->_mtx));
 
@@ -52,29 +80,5 @@ void URL::_progress_callback(URL *clientp, double dltotal, double dlnow) {
     if (dltotal == dlnow && dltotal > 0) {
         clientp->_done = true;
     }
-}
-
-int URL::get_id() const {
-    return _id;
-}
-
-int URL::get_len() const {
-    return _len;
-}
-
-const std::string &URL::get_path() const {
-    return _path;
-}
-
-double URL::get_progress() const {
-    return _progress;
-}
-
-int URL::get_pipes() const {
-    return _pipes;
-}
-
-bool URL::is_done() const {
-    return _done;
 }
 

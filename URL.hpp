@@ -12,8 +12,6 @@ class URL {
 public:
     URL(int id, std::string url, std::string path, std::mutex *mtx);
 
-    void operator()(Semaphore *s);
-
     int get_id() const;
 
     int get_len() const;
@@ -25,6 +23,8 @@ public:
     int get_pipes() const;
 
     bool is_done() const;
+
+    void operator()(Semaphore *s);
 
 private:
     int _id;
