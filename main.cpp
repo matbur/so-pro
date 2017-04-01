@@ -1,89 +1,20 @@
-#include <ncurses.h>
-#include <boost/program_options.hpp>
 #include <boost/filesystem.hpp>
-#include <curl/curl.h>
+#include <boost/program_options.hpp>
+#include <condition_variable>
 #include <iostream>
-#include <thread>
 #include <mutex>
+#include <ncurses.h>
+#include <thread>
+
+#include "Semaphore.h"
+#include "URL_Thread.h"
 
 namespace po = boost::program_options;
 namespace fs = boost::filesystem;
 
-std::mutex gui_mutex;
+//std::mutex gui_mutex;
 std::mutex urls_mutex;
 
-
-class URL_Thread {
-public:
-    int _id;
-    std::string _url;
-    int _len;
-    std::string _path;
-    double _progress;
-    int _pipes;
-    bool _done;
-
-public:
-    URL_Thread(int id, std::string url, std::string path);
-
-    void operator()();
-};
-
-size_t data_write(void *ptr, size_t size, size_t nmemb, void *userdata);
-
-void progress_callback(URL_Thread *clientp, double dltotal, double dlnow, double ultotal, double ulnow);
-
-URL_Thread::URL_Thread(int id, std::string url, std::string path)
-        : _id(id), _url(url), _path(path), _progress(0.), _pipes(0) {
-    _len = (int) url.size();
-    _done = false;
-//    std::cout << path << ' ' << this << '\n';
-}
-
-void URL_Thread::operator()() {
-    auto curl = curl_easy_init();
-
-    if (curl == nullptr)
-        return;
-
-    std::ofstream outfile(_path);
-
-    curl_easy_setopt(curl, CURLOPT_URL, _url.c_str());
-    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &data_write);
-    curl_easy_setopt(curl, CURLOPT_WRITEDATA, &outfile);
-    curl_easy_setopt(curl, CURLOPT_PROGRESSFUNCTION, progress_callback);
-    curl_easy_setopt(curl, CURLOPT_PROGRESSDATA, this);
-    curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 0L);
-
-    curl_easy_perform(curl);
-
-    outfile.close();
-    curl_easy_cleanup(curl);
-}
-
-
-size_t data_write(void *ptr, size_t size, size_t nmemb, void *userdata) {
-    if (userdata) {
-        auto &os = *(std::ostream *) userdata;
-        auto len = size * nmemb;
-        if (os.write((char *) ptr, len))
-            return len;
-    }
-    return 0;
-}
-
-void progress_callback(URL_Thread *clientp, double dltotal, double dlnow, double ultotal, double ulnow) {
-    auto progress = 100 * dlnow / dltotal;
-    std::lock_guard<std::mutex> lk(urls_mutex);
-
-    clientp->_progress = progress;
-    clientp->_pipes = (int) progress / 10;
-    if (dltotal == dlnow && dltotal > 0) {
-        clientp->_done = true;
-    }
-//    printf("%s %.2f\n", clientp->_path.c_str(), progress);
-//    std::cout << clientp->_path << ' ' << clientp << '\n';
-}
 
 std::vector<URL_Thread> urls;
 
@@ -158,16 +89,15 @@ int read_urls() {
     std::ifstream file(arg.input_file);
     std::string url, fname;
 
-    urls_mutex.lock();
+    std::lock_guard<std::mutex> lk(urls_mutex);
     auto url_id = 0;
     while (file >> url >> fname) {
         if (url[0] == '#')
             continue;
 
         auto path = arg.output_dir + "/" + fname;
-        urls.push_back(URL_Thread{url_id++, url, path});
+        urls.push_back(URL_Thread{url_id++, url, path, &urls_mutex});
     }
-    urls_mutex.unlock();
 
     return 0;
 }
@@ -175,8 +105,6 @@ int read_urls() {
 void paint() {
     erase();
 
-//    std::lock_guard<std::mutex> lk(urls_mutex);
-    std::lock_guard<std::mutex> lk(gui_mutex);
     for (auto url: urls) {
         move(url._id, 0);
         printw(url._path.c_str());
@@ -188,30 +116,6 @@ void paint() {
     }
 
     refresh();
-}
-
-void gui_func() {
-    initscr();
-    raw();
-
-    bool done = false;
-    while (!done) {
-//        gui_mutex.lock();
-//        urls_mutex.lock();
-        done = true;
-        for (auto url: urls) {
-            if (!url._done) {
-                done = false;
-                break;
-            }
-        }
-//        urls_mutex.unlock();
-        paint();
-//        gui_mutex.unlock();
-    }
-
-    getch();
-    endwin();
 }
 
 void print_urls() {
@@ -240,27 +144,27 @@ void print_urls() {
     }
 }
 
+void gui_func() {
+    initscr();
+    raw();
 
-class MyThread {
-    int _x;
-    int _pro;
-public:
-    MyThread(int x) : _x(x) {}
-
-    void operator()(int &n) {
-        for (auto i = 0; i < 100; i++) {
-            std::this_thread::sleep_for(std::chrono::milliseconds(2));
-//            foo();
-            gui_mutex.lock();
-            n++;
-            if (n == 90) {
-//                num--;
+    bool done = false;
+    while (!done) {
+        done = true;
+        for (auto url: urls) {
+            if (!url._done) {
+                done = false;
+                break;
             }
-            gui_mutex.unlock();
-
         }
+
+        paint();
     }
-};
+
+    getch();
+    endwin();
+}
+
 
 
 int main(int argc, const char *const *argv) {
@@ -281,12 +185,13 @@ int main(int argc, const char *const *argv) {
 //    printf("args: -i |%s| -n |%d| -o |%s|\n", arg.input_file.c_str(), arg.max_threads, arg.output_dir.c_str());
 //    std::cout << "|" << arg.input_file << "|" << arg.max_threads << "|" << arg.output_dir << "|\n";
 
-//    URL_Thread(1, "http://cachefly.cachefly.net/10mb.test", "/home/matbur/tmp/bigfile")();
     std::thread gui_thread(gui_func);
+
+    Semaphore sem(arg.max_threads);
 
     std::vector<std::thread> threads;
     for (auto &url: urls) {
-        threads.push_back(std::thread(std::ref(url)));
+        threads.push_back(std::thread(std::ref(url), &sem));
     }
 
     for (auto &t: threads) {
