@@ -7,16 +7,13 @@
 #include <thread>
 
 #include "Semaphore.h"
-#include "URL_Thread.h"
+#include "URL.h"
 
 namespace po = boost::program_options;
 namespace fs = boost::filesystem;
 
-//std::mutex gui_mutex;
+std::vector<URL> urls;
 std::mutex urls_mutex;
-
-
-std::vector<URL_Thread> urls;
 
 int fun_with_ncurses() {
 
@@ -91,62 +88,55 @@ int read_urls() {
 
     std::lock_guard<std::mutex> lk(urls_mutex);
     auto url_id = 0;
+    // TODO: read whole lines
     while (file >> url >> fname) {
         if (url[0] == '#')
             continue;
 
         auto path = arg.output_dir + "/" + fname;
-        urls.push_back(URL_Thread{url_id++, url, path, &urls_mutex});
+        urls.push_back(URL{url_id++, url, path, &urls_mutex});
     }
 
     return 0;
 }
 
-void paint() {
+void paint(size_t number, int len) {
     erase();
 
-    for (auto url: urls) {
-        move(url._id, 0);
-        printw(url._path.c_str());
-        addch(' ');
-        printw("%d %.2f", url._pipes, url._progress);
-//        for (auto i = 0; i < url._pipes; i++) {
-//            addch('|');
-//        }
-    }
-
-    refresh();
-}
-
-void print_urls() {
-    urls_mutex.lock();
-    auto n = urls.size();
-    urls_mutex.unlock();
-
-    auto plural_f = n == 1 ? "" : "s";
+    move(1, 1);
+    auto plural_f = number == 1 ? "" : "s";
     auto plural_t = arg.max_threads == 1 ? "" : "s";
-    printw("Downloading %d file%s by %d thread%s",
-           n, plural_f, arg.max_threads, plural_t);
-
-    auto len = 0;
-    for (auto url: urls) {
-        len = std::max(url._len, len);
-    }
+    printw("matbur's web scraper (%d file%s, %d thread%s)", number, plural_f, arg.max_threads, plural_t);
 
     for (auto url: urls) {
-        const auto y = url._id + 1;
-        move(y, 0);
-        printw(url._url.c_str());
-        move(y, len + 1);
+        auto y = url._id + 3;
+        move(y, 1);
+        printw("%4d) %s ", url._id, url._path.c_str());
+        move(y, len + 10);
         addch('[');
+        for (auto i = 0; i < url._pipes; i++) {
+            addch('|');
+        }
         move(y, len + 21);
-        printw("]  0.00 %%");
+        printw("] %.2f %%", url._progress);
     }
+
+    move(0, 0);
+    refresh();
 }
 
 void gui_func() {
     initscr();
     raw();
+
+    urls_mutex.lock();
+    auto number = urls.size();
+    auto max_len = 0;
+    for (auto url: urls) {
+        max_len = std::max(max_len, url._len);
+    }
+    urls_mutex.unlock();
+
 
     bool done = false;
     while (!done) {
@@ -158,13 +148,12 @@ void gui_func() {
             }
         }
 
-        paint();
+        paint(number, max_len);
     }
 
     getch();
     endwin();
 }
-
 
 
 int main(int argc, const char *const *argv) {
@@ -177,13 +166,6 @@ int main(int argc, const char *const *argv) {
     }
 
     read_urls();
-//    for (auto url:urls) {
-//        std::cout << url._path << ' ' << &url << '\n';
-//    }
-//    print_urls();
-
-//    printf("args: -i |%s| -n |%d| -o |%s|\n", arg.input_file.c_str(), arg.max_threads, arg.output_dir.c_str());
-//    std::cout << "|" << arg.input_file << "|" << arg.max_threads << "|" << arg.output_dir << "|\n";
 
     std::thread gui_thread(gui_func);
 

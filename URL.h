@@ -12,7 +12,7 @@
 
 #pragma once
 
-class URL_Thread {
+class URL {
 public:
     int _id;
     std::string _url;
@@ -24,12 +24,12 @@ public:
     std::mutex *_mtx;
 
 public:
-    URL_Thread(int id, std::string url, std::string path, std::mutex *mtx);
+    URL(int id, std::string url, std::string path, std::mutex *mtx);
 
     void operator()(Semaphore *s);
 };
 
 size_t data_write(void *ptr, size_t size, size_t nmemb, void *userdata);
 
-void progress_callback(URL_Thread *clientp, double dltotal, double dlnow, double ultotal, double ulnow);
+void progress_callback(URL *clientp, double dltotal, double dlnow);
 
