@@ -10,7 +10,7 @@ so_pro: main.cpp $(OBJ)
 
 
 run:
-	./so_pro -n 4 -i urls.txt
+	./so_pro -n 4 -i _urls.txt
 
 
 clean:

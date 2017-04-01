@@ -1,9 +1,4 @@
-//
-// Created by matbur on 3/31/17.
-//
-
-#include "URL.h"
-
+#include "URL.hpp"
 
 URL::URL(int id, std::string url, std::string path, std::mutex *mtx)
         : _id(id), _url(url), _path(path), _mtx(mtx) {

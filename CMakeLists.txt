@@ -3,7 +3,7 @@ project(so_pro)
 
 set(CMAKE_CXX_STANDARD 14)
 
-set(SOURCE_FILES main.cpp URL.cpp URL.h Semaphore.cpp Semaphore.h)
+set(SOURCE_FILES main.cpp URL.cpp URL.hpp Semaphore.cpp Semaphore.hpp GUI.cpp GUI.hpp Arguments.cpp Arguments.hpp)
 add_executable(so_pro ${SOURCE_FILES})
 
 # ncurses

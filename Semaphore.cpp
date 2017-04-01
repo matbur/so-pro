@@ -1,8 +1,4 @@
-//
-// Created by matbur on 4/1/17.
-//
-
-#include "Semaphore.h"
+#include "Semaphore.hpp"
 
 Semaphore::Semaphore(int count) : _max_threads(count) {
     _working_threads = 0;
