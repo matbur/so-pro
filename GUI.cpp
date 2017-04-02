@@ -38,7 +38,8 @@ void GUI::_paint(size_t number, int len) {
     move(1, 1);
     auto plural_f = number == 1 ? "" : "s";
     auto plural_t = _max_threads == 1 ? "" : "s";
-    printw("matbur's web scraper (%d file%s, %d thread%s)", number, plural_f, _max_threads, plural_t);
+    auto max_threads = _max_threads == 1 << 16 ? "all" : std::to_string(_max_threads).c_str();
+    printw("matbur's web scraper (%d file%s, %s thread%s)", number, plural_f, max_threads, plural_t);
 
     for (auto url: *_urls) {
         auto y = url.get_id() + 3;

@@ -11,16 +11,16 @@ int Arguments::_parse_args() {
     po::options_description desc("Allowed options");
     desc.add_options()
             ("help,h", "show this message and exit")
-            ("_input_file,i", po::value<std::string>(&_input_file), "(REQUIRED) file with _urls")
-            ("thread_num,n", po::value<int>(&_max_threads), "(REQUIRED) number of threads")
-            ("_output_dir,o", po::value<std::string>(&_output_dir)->default_value("output"),
+            ("input_file,i", po::value<std::string>(&_input_file), "(REQUIRED) file with urls")
+            ("thread_num,n", po::value<int>(&_max_threads)->default_value(1 << 16), "number of threads")
+            ("output_dir,o", po::value<std::string>(&_output_dir)->default_value("output"),
              "destination directory");
 
     po::variables_map vm;
     po::store(po::parse_command_line(_argc, _argv, desc), vm);
     po::notify(vm);
 
-    if (vm.count("help") || !vm.count("_input_file") || !vm.count("thread_num")) {
+    if (vm.count("help") || !vm.count("input_file")) {
         std::cout << desc;
         return 1;
     }
