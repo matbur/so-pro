@@ -15,7 +15,7 @@ public:
 
     int get_max_threads() const;
 
-    bool is_valid();
+    int is_valid();
 
 private:
     std::string _input_file;

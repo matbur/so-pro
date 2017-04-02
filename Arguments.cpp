@@ -25,21 +25,26 @@ int Arguments::_parse_args() {
         return 1;
     }
 
+    if (_max_threads < 1) {
+        puts("[Error] Argument thread_num must be positive integer or empty");
+        return 2;
+    }
+
     return 0;
 }
 
 int Arguments::_manage_files() {
     if (!fs::is_regular_file(_input_file)) {
-        printf("No such file: %s\n", _input_file.c_str());
-        return 2;
+        printf("[Error] No such file: %s\n", _input_file.c_str());
+        return 4;
     }
 
     if (!fs::is_directory(_output_dir)) {
         try {
             return !fs::create_directories(_output_dir);
         } catch (fs::filesystem_error) {
-            printf("Couldn't create directory: %s\n", _output_dir.c_str());
-            return 0;
+            printf("[Error] Couldn't create directory: %s\n", _output_dir.c_str());
+            return 8;
         }
     }
 
@@ -64,8 +69,8 @@ int Arguments::_read_urls() {
     return 0;
 }
 
-bool Arguments::is_valid() {
-    return _parse_args() || _manage_files() || _read_urls();
+int Arguments::is_valid() {
+    return _parse_args() + _manage_files() + _read_urls();
 }
 
 
