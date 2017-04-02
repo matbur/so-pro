@@ -18,9 +18,7 @@ public:
 
     const std::string &get_path() const;
 
-    double get_progress() const;
-
-    int get_pipes() const;
+    int get_progress() const;
 
     bool is_done() const;
 
@@ -31,8 +29,7 @@ private:
     std::string _url;
     int _len;
     std::string _path;
-    double _progress;
-    int _pipes;
+    int _progress;
     bool _done;
     std::mutex *_mtx;
 

@@ -47,11 +47,11 @@ void GUI::_paint(size_t number, int len) {
         printw("%4d) %s ", url.get_id(), url.get_path().c_str());
         move(y, len + 10);
         addch('[');
-        for (auto i = 0; i < url.get_pipes(); i++) {
-            addch('|');
+        for (auto i = 0; i < url.get_progress() / 5; i++) {
+            addch('#');
         }
-        move(y, len + 21);
-        printw("] %.2f %%", url.get_progress());
+        move(y, len + 31);
+        printw("] %3d %%", url.get_progress());
     }
 
     move(0, 0);

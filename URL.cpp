@@ -3,8 +3,7 @@
 URL::URL(int id, std::string url, std::string path, std::mutex *mtx)
         : _id(id), _url(url), _path(path), _mtx(mtx) {
     _len = (int) path.size();
-    _progress = 0.;
-    _pipes = 0;
+    _progress = 0;
     _done = false;
 }
 
@@ -20,12 +19,8 @@ const std::string &URL::get_path() const {
     return _path;
 }
 
-double URL::get_progress() const {
+int URL::get_progress() const {
     return _progress;
-}
-
-int URL::get_pipes() const {
-    return _pipes;
 }
 
 bool URL::is_done() const {
@@ -68,15 +63,14 @@ size_t URL::_data_write(void *ptr, size_t size, size_t nmemb, void *userdata) {
 
 void URL::_progress_callback(URL *clientp, double dltotal, double dlnow) {
 
-    auto progress = 100 * dlnow / dltotal;
+    auto progress = int(100 * dlnow / dltotal);
 
     if (dltotal == 0)
         progress = 0;
 
-    std::lock_guard<std::mutex> lk(*(clientp->_mtx));
+    std::lock_guard<std::mutex> lg(*(clientp->_mtx));
 
     clientp->_progress = progress;
-    clientp->_pipes = (int) progress / 10;
     if (dltotal == dlnow && dltotal > 0) {
         clientp->_done = true;
     }
