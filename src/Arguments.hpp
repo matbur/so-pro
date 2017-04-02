@@ -1,9 +1,6 @@
 #pragma once
 
-#include <boost/filesystem.hpp>
-#include <boost/program_options.hpp>
-#include <iostream>
-
+#include "common.hpp"
 #include "URL.hpp"
 
 namespace po = boost::program_options;

@@ -1,7 +1,4 @@
-#include <iostream>
-#include <mutex>
-#include <thread>
-
+#include "common.hpp"
 #include "Arguments.hpp"
 #include "GUI.hpp"
 

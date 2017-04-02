@@ -1,11 +1,6 @@
 #pragma once
 
-#include <curl/curl.h>
-#include <fstream>
-#include <iostream>
-#include <mutex>
-#include <ncurses.h>
-
+#include "common.hpp"
 #include "Semaphore.hpp"
 
 class URL {

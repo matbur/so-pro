@@ -1,7 +1,6 @@
 #pragma once
 
-#include <vector>
-
+#include "common.hpp"
 #include "URL.hpp"
 
 class GUI {

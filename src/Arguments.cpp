@@ -34,6 +34,9 @@ int Arguments::_parse_args() {
 }
 
 int Arguments::_manage_files() {
+    if (_input_file == "")
+        return 0;
+
     if (!fs::is_regular_file(_input_file)) {
         printf("[Error] No such file: %s\n", _input_file.c_str());
         return 4;
@@ -55,7 +58,7 @@ int Arguments::_read_urls() {
     std::ifstream file(_input_file);
     std::string url, fname;
 
-//        std::lock_guard<std::mutex> lk(*_mtx);
+    std::lock_guard<std::mutex> lk(*_mtx);
     auto url_id = 0;
     // TODO: read whole lines
     while (file >> url >> fname) {
