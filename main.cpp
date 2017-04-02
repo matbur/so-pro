@@ -39,7 +39,7 @@ int main(int argc, const char *const *argv) {
     if (auto ret = args.is_valid())
         return ret;
 
-    auto gui_thread = std::thread(GUI(&urls, args.get_max_threads()), &urls_mutex);
+    auto gui_thread = std::thread(GUI(&urls, args.get_max_threads(), &urls_mutex));
 
     Semaphore sem(args.get_max_threads());
 

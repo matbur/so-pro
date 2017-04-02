@@ -6,14 +6,16 @@
 
 class GUI {
 public:
-    GUI(std::vector<URL> *urls, int max_threads);
+    GUI(std::vector<URL> *urls, int max_threads, std::mutex *mtx);
 
-    void operator()(std::mutex *mtx);
+    void operator()();
 
 private:
     std::vector<URL> *_urls;
     int _max_threads;
+    size_t _number;
+    int _max_len;
 
-    void _paint(size_t number, int len);
+    void _paint();
 };
 

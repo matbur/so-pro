@@ -4,8 +4,8 @@ URL::URL(int id, std::string url, std::string path, std::mutex *mtx)
         : _id(id), _url(url), _path(path), _mtx(mtx) {
     _len = (int) path.size();
     _progress = 0;
-    _total = 0.;
-    _now = 0.;
+    _total = 0;
+    _now = 0;
     _done = false;
 }
 
@@ -25,11 +25,11 @@ int URL::get_progress() const {
     return _progress;
 }
 
-double URL::get_total() const {
+int URL::get_total() const {
     return _total;
 }
 
-double URL::get_now() const {
+int URL::get_now() const {
     return _now;
 }
 
@@ -81,8 +81,8 @@ void URL::_progress_callback(URL *clientp, double dltotal, double dlnow) {
     std::lock_guard<std::mutex> lg(*(clientp->_mtx));
 
     clientp->_progress = progress;
-    clientp->_total = dltotal;
-    clientp->_now = dlnow;
+    clientp->_total = (int) dltotal;
+    clientp->_now = (int) dlnow;
 
     if (dltotal == dlnow && dltotal > 0) {
         clientp->_done = true;

@@ -19,8 +19,10 @@ public:
     const std::string &get_path() const;
 
     int get_progress() const;
-    double get_total() const;
-    double get_now() const;
+
+    int get_total() const;
+
+    int get_now() const;
 
     bool is_done() const;
 
@@ -32,8 +34,8 @@ private:
     int _len;
     std::string _path;
     int _progress;
-    double _total;
-    double _now;
+    int _total;
+    int _now;
     bool _done;
     std::mutex *_mtx;
 
