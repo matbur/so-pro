@@ -10,8 +10,7 @@ help:
 local:
 	make -C src -j
 	@echo
-	./src/so_pro
-	@echo
+	@./src/so_pro; echo
 	@echo "usage: ./src/so_pro -i FILE -n NUM"
 	@echo "example: ./src/so_pro -i urls.txt -n 4"
 
