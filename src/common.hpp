@@ -4,6 +4,7 @@
 #include <fstream>
 #include <iostream>
 #include <mutex>
+#include <regex>
 #include <thread>
 #include <vector>
 

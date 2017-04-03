@@ -17,7 +17,6 @@ void GUI::operator()() {
     initscr();
     raw();
 
-    keypad(stdscr, true);
     _height = getmaxy(stdscr);
 
     start_color();
@@ -33,7 +32,6 @@ void GUI::operator()() {
                 break;
             }
         }
-
         _paint();
     }
 

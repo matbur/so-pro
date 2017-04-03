@@ -92,7 +92,6 @@ void URL::_progress_callback(URL *clientp, double dltotal, double dlnow) {
     clientp->_total = (int) dltotal;
     clientp->_now = (int) dlnow;
 
-    if (dltotal == dlnow && dltotal > 0) {
+    if (dltotal == dlnow && dltotal > 0)
         clientp->_done = true;
-    }
 }

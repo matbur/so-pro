@@ -29,7 +29,6 @@ int Arguments::_parse_args() {
         puts("[Error] Argument thread_num must be positive integer or empty");
         return 2;
     }
-
     return 0;
 }
 
@@ -50,25 +49,25 @@ int Arguments::_manage_files() {
             return 8;
         }
     }
-
     return 0;
 }
 
 int Arguments::_read_urls() {
     std::ifstream file(_input_file);
-    std::string url, fname;
+    std::string line, url, fname;
 
     std::lock_guard<std::mutex> lk(*_mtx);
     auto url_id = 0;
-    // TODO: read whole lines
-    while (file >> url >> fname) {
-        if (url[0] == '#')
+    while (std::getline(file, line)) {
+        if (line[0] == '#')
             continue;
-
+        std::istringstream iss(line);
+        if (!(iss >> url >> fname)) {
+            fname = get_fname(url);
+        }
         auto path = _output_dir + "/" + fname;
         _urls->push_back(URL{url_id++, url, path, _mtx});
     }
-
     return 0;
 }
 
@@ -76,4 +75,11 @@ int Arguments::is_valid() {
     return _parse_args() + _manage_files() + _read_urls();
 }
 
-
+std::string Arguments::get_fname(std::string url) {
+    std::regex re_fname(".*/(.+)");
+    std::smatch smatch;
+    if (std::regex_match(url, smatch, re_fname)) {
+        return smatch[1].str();
+    }
+    return "file";
+}

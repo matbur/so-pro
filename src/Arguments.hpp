@@ -28,4 +28,6 @@ private:
     int _manage_files();
 
     int _read_urls();
+
+    std::string get_fname(std::string url);
 };
