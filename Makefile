@@ -8,7 +8,7 @@ help:
 	@echo "    to delete both run 'make docker_clean'"
 
 local:
-	make -C src
+	make -C src -j
 	@echo; \
         ./src/so_pro; \
         echo; \
@@ -21,7 +21,7 @@ local_clean:
 docker: docker_build docker_run
 
 docker_build:
-	docker build -f docker/Dockerfile -t matbur_image:latest .
+	docker build -t matbur_image:latest .
 
 docker_run:
 	docker run -it --name matbur_container matbur_image:latest
