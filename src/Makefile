@@ -4,7 +4,7 @@ OBJ = Arguments.o GUI.o Semaphore.o URL.o
 
 all: so_pro
 
-so_pro: src/main.cpp $(OBJ)
+so_pro: main.cpp $(OBJ)
 	$(CXX) $(CXXFLAGS) $(LDFLAGS) $^ -o $@
 
 run:

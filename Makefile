@@ -1,24 +1,35 @@
 help:
-	@echo "For local version run: 'make local'"
-	@echo "For docker version run: 'make docker'"
+	@echo "For local version run 'make local'"
+	@echo "    This command will build project locally in ./src directory"
+	@echo ""
+	@echo "For docker version run 'make docker'"
+	@echo "    This command will build docker image with name 'matbur_image'"
+	@echo "    and container with name 'matbur_container'"
+	@echo "    to delete both run 'make docker_clean'"
 
 local:
-	cd src
-	make
-	./so_pro
+	make -C src
+	@echo; \
+        ./src/so_pro; \
+        echo; \
+        echo "usage: ./src/so_pro -i FILE -n NUM"; \
+        echo "example: ./src/so_pro -i urls.txt -n 4"
+
+local_clean:
+	make -C src clean
 
 docker: docker_build docker_run
 
 docker_build:
-	docker build -f docker/Dockerfile -t mateusz_burniak_image:latest .
+	docker build -f docker/Dockerfile -t matbur_image:latest .
 
 docker_run:
-	docker run -it --name mateusz_burniak_container mateusz_burniak_image:latest
+	docker run -it --name matbur_container matbur_image:latest
 
 docker_clean: docker_rm docker_rmi
 
 docker_rm:
-	docker rm mateusz_burniak_container
+	docker rm matbur_container
 
 docker_rmi:
-	docker rmi mateusz_burniak_image
+	docker rmi matbur_image
