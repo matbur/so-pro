@@ -15,8 +15,8 @@ WORKDIR so_pro
 RUN cmake .
 RUN make -j
 RUN mv so_pro run/
+WORKDIR run
 RUN echo "echo '\n'" >> ~/.bashrc
 RUN echo "./so_pro" >> ~/.bashrc
 RUN echo "echo '\nusage: ./so_pro -i FILE -n NUM'" >> ~/.bashrc
 RUN echo "echo 'example: ./so_pro -i urls.txt -n 4\n'" >> ~/.bashrc
-WORKDIR run

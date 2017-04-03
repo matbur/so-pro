@@ -1,7 +1,7 @@
 help:
 	@echo "For local version run 'make local'"
 	@echo "    This command will build project locally in ./src directory"
-	@echo ""
+	@echo
 	@echo "For docker version run 'make docker'"
 	@echo "    This command will build docker image with name 'matbur_image'"
 	@echo "    and container with name 'matbur_container'"
@@ -9,11 +9,11 @@ help:
 
 local:
 	make -C src -j
-	@echo; \
-        ./src/so_pro; \
-        echo; \
-        echo "usage: ./src/so_pro -i FILE -n NUM"; \
-        echo "example: ./src/so_pro -i urls.txt -n 4"
+	@echo;
+    ./src/so_pro;
+	@echo;
+    @echo "usage: ./src/so_pro -i FILE -n NUM";
+    @echo "example: ./src/so_pro -i urls.txt -n 4"
 
 local_clean:
 	make -C src clean
