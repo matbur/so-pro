@@ -21,6 +21,8 @@ public:
 
     bool is_done() const;
 
+    const char *get_error() const;
+
     void operator()(Semaphore *s);
 
 private:
@@ -32,6 +34,7 @@ private:
     int _total;
     int _now;
     bool _done;
+    char _error[CURL_ERROR_SIZE] = {0};
     std::mutex *_mtx;
 
     static size_t _data_write(void *ptr, size_t size, size_t nmemb, void *userdata);

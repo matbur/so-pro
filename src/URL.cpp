@@ -37,6 +37,10 @@ bool URL::is_done() const {
     return _done;
 }
 
+const char *URL::get_error() const {
+    return _error;
+}
+
 void URL::operator()(Semaphore *s) {
     s->wait();
 
@@ -52,11 +56,15 @@ void URL::operator()(Semaphore *s) {
     curl_easy_setopt(curl, CURLOPT_PROGRESSFUNCTION, _progress_callback);
     curl_easy_setopt(curl, CURLOPT_PROGRESSDATA, this);
     curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 0L);
+    curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, &_error);
 
     curl_easy_perform(curl);
 
     outfile.close();
     curl_easy_cleanup(curl);
+
+    if (_error[0])
+        _done = true;
 
     s->notify();
 }
@@ -88,4 +96,3 @@ void URL::_progress_callback(URL *clientp, double dltotal, double dlnow) {
         clientp->_done = true;
     }
 }
-

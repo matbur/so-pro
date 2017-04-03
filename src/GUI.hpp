@@ -14,6 +14,7 @@ private:
     int _max_threads;
     size_t _number;
     int _max_len;
+    int _height;
 
     void _paint();
 };
