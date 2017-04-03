@@ -9,11 +9,11 @@ help:
 
 local:
 	make -C src -j
-	@echo;
-    ./src/so_pro;
-	@echo;
-    @echo "usage: ./src/so_pro -i FILE -n NUM";
-    @echo "example: ./src/so_pro -i urls.txt -n 4"
+	@echo
+	./src/so_pro
+	@echo
+	@echo "usage: ./src/so_pro -i FILE -n NUM"
+	@echo "example: ./src/so_pro -i urls.txt -n 4"
 
 local_clean:
 	make -C src clean
