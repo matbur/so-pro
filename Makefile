@@ -23,6 +23,7 @@ docker_build:
 	docker build -t matbur_image:latest .
 
 docker_run:
+	docker rm matbur_container 2>/dev/null || echo
 	docker run -it --name matbur_container matbur_image:latest
 
 docker_clean: docker_rm docker_rmi
